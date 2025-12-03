@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Btech(CSE-A) - Attendance Marker</title>
+
+  <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --card-color: #ffffff;
+      --text-color: #1f2937;
+      --table-head: #2563eb;
+      --table-row-hover: #eef2ff;
+      --button-bg: #2563eb;
+      --button-bg-hover: #1e40af;
+    }
+
+    .dark {
+      --bg-color: #0f172a;
+      --card-color: #1e293b;
+      --text-color: #f1f5f9;
+      --table-head: #334155;
+      --table-row-hover: #1e293b;
+      --button-bg: #475569;
+      --button-bg-hover: #334155;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg-color);
+      margin: 0;
+      padding: 20px;
+      transition: background 0.4s ease;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background: var(--card-color);
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+      transition: 0.4s ease;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+      display: block;
+      margin-top: 12px;
+    }
+
+   #datePicker{
+    width: 97%;
+
+   }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #94a3b8;
+      margin-top: 6px;
+      outline: none;
+      background: var(--card-color);
+      color: var(--text-color);
+      transition: 0.25s;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      background: var(--card-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      background: var(--table-head);
+      color: white;
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #475569;
+      color: var(--text-color);
+    }
+
+    tr:hover {
+      background: var(--table-row-hover);
+    }
+
+    .btn-row {
+      margin-top: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: var(--button-bg);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: var(--button-bg-hover);
+    }
+
+    .toggle-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .switch {
+      position: relative;
+      width: 55px;
+      height: 28px;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #94a3b8;
+      transition: 0.4s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2563eb;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Dark Mode Toggle -->
+  <div class="toggle-container">
+    <label class="switch">
+      <input type="checkbox" id="darkToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <h2>Btech (CSE-A) Attendance</h2>
+
+  <label>Select Date:</label>
+  <input type="date" id="datePicker">
+
+  <label>Select Subject:</label>
+  <select id="subjectSelect">
+    <option value="">-- Select Subject --</option>
+    <option>Advance Web Technology</option>
+    <option>Soft Computing</option>
+    <option>Digital Electronics</option>
+    <option>Sociology</option>
+    <option>DSA</option>
+    <option>Maths</option>
+  </select>
+
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Present</th>
+        <th>Absent</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h3 style="color:var(--text-color)">Present: <span id="presentCount">0</span> |
+    Absent: <span id="absentCount">0</span></h3>
+
+  <div class="btn-row">
+    <button onclick="saveAttendance()">Save Attendance</button>
+  </div>
+
+</div>
+
+<script>
+const students = [
+"Asmita Yadav-02","Aakruti Singh-65","Bandhan-66","Akanksha Verma-68","Aradhya Gupta-71",
+"Akanksha Rajput-74","Ayushi Dixit-76","Diksha Ranjan-82","Khushi Prajapati-98",
+"Khushi Sahani-110","Gaurav Singh-03","Aditya Yadav-06","Ashmit Rai-62","Keshav Tiwari-63",
+"Abhay Pratap-64","Harsh-67","Abhay Pratap Singh-69","Akash Sharma-70","Divyanshu Vishwakarma-72",
+"Alok Srivastava-73","Abhay Kumar-75","Atul Prabhat-77","Archit Raj-78","Adarsh Prajapati-79",
+"Aniket Kumar-83","Abhishek Pandey-84","Amalesh Sonkar-86","Aditya Shyam-87","Aryan Tiwari-88",
+"Adesh-89","Ashish Saini-90","Ayush Dixit-91","Ankit Kumar Yadav-92","Abhishek Kumar-93",
+"Ashish Kumar-94","Arpit Maurya-95","Aagaman Patel-96","Arpit Verma-97","Ayan Ahmad-99",
+"Anant Singh-100","Akash Yadav-101","Anurag Yadav-102","Anuj Kumar-103","Jainit Verma-104",
+"Abhishek Kumar Yadav-105","Abhyansh Nigam-106","Adarsh Pandey-107","Anant Kumar-108",
+"Aviral Mishra-109","Aditya Dixit-111","Akshay Singh-134"
+];
+
+const tbody = document.querySelector("#studentTable tbody");
+
+students.forEach(name => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${name}</td>
+      <td><input type="radio" name="${name}" value="Present" onchange="updateCount()"></td>
+      <td><input type="radio" name="${name}" value="Absent" onchange="updateCount()"></td>
+    </tr>`;
+});
+
+function updateCount() {
+  let present = 0, absent = 0;
+  students.forEach(name => {
+    const marked = document.querySelector(`input[name="${name}"]:checked`);
+    if (marked) {
+      if (marked.value === "Present") present++;
+      else absent++;
+    }
+  });
+  document.getElementById("presentCount").innerText = present;
+  document.getElementById("absentCount").innerText = absent;
+}
+
+function saveAttendance() {
+  const date = document.getElementById("datePicker").value;
+  const subject = document.getElementById("subjectSelect").value;
+
+  if (!date) return alert("Please select a date!");
+  if (!subject) return alert("Please select a subject!");
+
+  let attendance = {};
+
+  students.forEach(name => {
+    const status = document.querySelector(`input[name="${name}"]:checked`);
+    attendance[name] = status ? status.value : "Not Marked";
+  });
+
+  // Save in localStorage
+  localStorage.setItem("attendance_data", JSON.stringify(attendance));
+  localStorage.setItem("attendance_date", date);
+  localStorage.setItem("attendance_subject", subject);
+
+  window.location.href = "download.html";
+}
+
+// Dark Mode
+document.getElementById("darkToggle").addEventListener("change", () => {
+    document.body.classList.toggle("dark");
+});
+
+// Auto-fill today's date
+window.onload = () => {
+  let t = new Date();
+  document.getElementById("datePicker").value =
+    `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+};
+</script>
+
+</body>
+</html>
